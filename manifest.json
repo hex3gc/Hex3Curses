@@ -1,0 +1,10 @@
+﻿{
+    "name": "Hex3Curses",
+    "version_number": "0.1.0",
+    "website_url": "https://github.com/hex3gc/Hex3Curses",
+    "description": "Adds a new tier of item which inflicts negative effects.",
+    "dependencies": [
+         "tristanmcpherson-R2API-4.4.1",
+	 "bbepis-BepInExPack-5.4.2102",
+    ]
+}
