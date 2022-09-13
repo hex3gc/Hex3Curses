@@ -258,7 +258,6 @@ namespace Hex3Curses.Curses.Tier1
                 {
                     if (interactableObject.name != "GenericPickup" && interactableObject.name != "GenericPickup(Clone)")
                     {
-                        Chat.AddMessage("" + interactableObject.name);
                         DamageInfo damageInfo = new DamageInfo();
                         damageInfo.damage = (body.maxHealth + body.maxShield) * ((PercentHpCost.Value / 100f) + ((PercentHpCostStack.Value * (body.inventory.GetItemCount(ItemDef) - 1)) / 100f));
                         damageInfo.damageType = DamageType.BypassArmor & DamageType.BypassBlock & DamageType.BypassOneShotProtection;
@@ -268,7 +267,7 @@ namespace Hex3Curses.Curses.Tier1
                         damageInfo.damageColorIndex = DamageColorIndex.SuperBleed;
                         damageInfo.procCoefficient = 0f;
                         damageInfo.procChainMask = new ProcChainMask();
-                        damageInfo.attacker = interactableObject;
+                        damageInfo.attacker = body.gameObject;
                         // Cap damage at 90%
                         if (damageInfo.damage > ((body.maxHealth + body.maxShield) * 0.9f))
                         {

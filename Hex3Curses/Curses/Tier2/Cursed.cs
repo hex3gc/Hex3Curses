@@ -3,6 +3,7 @@ using Hex3Curses;
 using Hex3Curses.Modules;
 using MonoMod.Cil;
 using R2API;
+using RewiredConsts;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -10,23 +11,20 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Diagnostics;
 
-namespace Hex3Curses.Curses.Tier1
+namespace Hex3Curses.Curses.Tier2
 {
-    internal class Forgetfulness : CurseBase
+    internal class Cursed : CurseBase
     {
         public ConfigEntry<bool> Enabled;
-        public ConfigEntry<int> ItemRemovePerStage;
-        public ConfigEntry<float> CursePrefersCommon;
-        public ConfigEntry<float> CursePrefersUncommon;
-        public ConfigEntry<float> CursePrefersLegendary;
+        public ConfigEntry<int> AddedCurses;
 
-        public override string ItemName => "Forgetfulness";
+        public override string ItemName => "Cursed";
         public override string ItemLangTokenName => ItemName.ToUpper();
 
-        public override CurseTier ItemCurseTier => CurseTier.Tier1;
+        public override CurseTier ItemCurseTier => CurseTier.Tier2;
 
-        public override GameObject ItemModel => Hex3Curses.MainAssets.LoadAsset<GameObject>("Assets/Curses/ForgetfulnessPrefab.prefab");
-        public override Sprite ItemIcon => Hex3Curses.MainAssets.LoadAsset<Sprite>("Assets/Curses/Forgetfulness.png");
+        public override GameObject ItemModel => Hex3Curses.MainAssets.LoadAsset<GameObject>("Assets/Curses/CursedPrefab.prefab");
+        public override Sprite ItemIcon => Hex3Curses.MainAssets.LoadAsset<Sprite>("Assets/Curses/Cursed.png");
         public static GameObject ItemDisplayPrefab;
 
         public override void Init(ConfigFile config)
@@ -41,19 +39,16 @@ namespace Hex3Curses.Curses.Tier1
 
         private bool CreateConfig(ConfigFile config)
         {
-            Enabled = config.Bind<bool>("Common Curse: " + ItemName, "Enabled", true, "Enable this curse");
-            ItemRemovePerStage = config.Bind<int>("Common Curse: " + ItemName, "Items Lost Per Stage", 2, "How many items will be lost when you enter a stage.");
-            CursePrefersCommon = config.Bind<float>("Common Curse: " + ItemName, "Common Chance", 80f, "Percent chance that a common item will be lost. These values should add up to 100.");
-            CursePrefersUncommon = config.Bind<float>("Common Curse: " + ItemName, "Uncommon Chance", 20f, "Percent chance that an uncommon item will be lost. These values should add up to 100.");
-            CursePrefersLegendary = config.Bind<float>("Common Curse: " + ItemName, "Legendary Chance", 0f, "Percent chance that a legendary item will be lost. These values should add up to 100.");
+            Enabled = config.Bind<bool>("Uncommon Curse: " + ItemName, "Enabled", true, "Enable this curse");
+            AddedCurses = config.Bind<int>("Uncommon Curse: " + ItemName, "Additional Curses", 1, "How many more curses to add per stage.");
             return Enabled.Value;
         }
 
         public override void CreateLang()
         {
-            LanguageAPI.Add("H3C_" + ItemLangTokenName + "_NAME", "<style=cEvent>Forgetfulness</style>");
-            LanguageAPI.Add("H3C_" + ItemLangTokenName + "_PICKUP", "<style=cEvent>You feel like you've forgotten something important.</style>");
-            LanguageAPI.Add("H3C_" + ItemLangTokenName + "_DESCRIPTION", String.Format("Each time you enter a stage, you will <style=cDeath>lose</style> {0} random items <style=cStack>(+{0} per stack)</style>. Prefers rarities: [{1}%/<style=cIsHealing>{2}%</style>/<style=cDeath>{3}%</style>]", ItemRemovePerStage.Value, CursePrefersCommon.Value, CursePrefersUncommon.Value, CursePrefersLegendary.Value));
+            LanguageAPI.Add("H3C_" + ItemLangTokenName + "_NAME", "<style=cEvent>Cursed</style>");
+            LanguageAPI.Add("H3C_" + ItemLangTokenName + "_PICKUP", "<style=cEvent>This planet has decided that you do not belong on it.</style>");
+            LanguageAPI.Add("H3C_" + ItemLangTokenName + "_DESCRIPTION", String.Format("For every stack, add <style=cDeath>{0}</style> more curse(s) to your inventory every stage.", AddedCurses.Value));
             LanguageAPI.Add("H3C_" + ItemLangTokenName + "_LORE", "");
         }
 
@@ -239,89 +234,7 @@ namespace Hex3Curses.Curses.Tier1
 
         public override void Hooks()
         {
-            On.RoR2.CharacterMaster.OnServerStageBegin += RemoveItems;
-        }
 
-        private void RemoveItems(On.RoR2.CharacterMaster.orig_OnServerStageBegin orig, CharacterMaster self, Stage stage)
-        {
-            if (self.inventory && self.inventory.GetItemCount(ItemDef) > 0)
-            {
-                Xoroshiro128Plus rng = new Xoroshiro128Plus(Run.instance.stageRng.nextUlong);
-                bool activated = true;
-                int itemCount = self.inventory.GetItemCount(ItemDef);
-                for (int i = 0; i < (itemCount * ItemRemovePerStage.Value); i++)
-                {
-                    int totalItems = 0;
-                    if (CursePrefersCommon.Value > 0) { totalItems += self.inventory.GetTotalItemCountOfTier(ItemTier.Tier1); }
-                    if (CursePrefersUncommon.Value > 0) { totalItems += self.inventory.GetTotalItemCountOfTier(ItemTier.Tier2); }
-                    if (CursePrefersLegendary.Value > 0) { totalItems += self.inventory.GetTotalItemCountOfTier(ItemTier.Tier3); }
-                    if (totalItems > 0)
-                    {
-                        if (activated && self.gameObject.TryGetComponent(out CurseBehavior behavior))
-                        {
-                            int messageChoice = rng.RangeInt(1, 5);
-                            switch (messageChoice)
-                            {
-                                case 1: behavior.forgetMessage = "<style=cEvent>You must've dropped something along the way...</style>"; break;
-                                case 2: behavior.forgetMessage = "<style=cEvent>Your pockets feel inexpliciably light...</style>"; break;
-                                case 3: behavior.forgetMessage = "<style=cEvent>You search your inventory for a certain item, but find nothing...</style>"; break;
-                                case 4: behavior.forgetMessage = "<style=cEvent>Did I forget my keys? Wait, no, it was something else...</style>"; break;
-                            }
-                            behavior.forgetChatTimerOn = true;
-                            activated = false;
-                        }
-
-                        float percentageSum = CursePrefersCommon.Value + CursePrefersUncommon.Value + CursePrefersLegendary.Value;
-                        float x = rng.RangeFloat(0f, percentageSum);
-                        List<ItemIndex> inventoryList = new List<ItemIndex>(self.inventory.itemAcquisitionOrder);
-                        Util.ShuffleList(inventoryList, rng);
-
-                        if (self.inventory.GetTotalItemCountOfTier(ItemTier.Tier1) > 0 && (CursePrefersCommon.Value > 0) && ((x -= CursePrefersCommon.Value) < 0))
-                        {
-                            foreach (ItemIndex itemIndex in inventoryList)
-                            {
-                                if (ItemCatalog.GetItemDef(itemIndex).tier == ItemTier.Tier1)
-                                {
-                                    self.inventory.RemoveItem(itemIndex);
-                                    break;
-                                }
-                            }
-                        }
-                        else if (self.inventory.GetTotalItemCountOfTier(ItemTier.Tier2) > 0 && (CursePrefersUncommon.Value > 0) && ((x -= CursePrefersUncommon.Value) < 0))
-                        {
-                            foreach (ItemIndex itemIndex in inventoryList)
-                            {
-                                if (ItemCatalog.GetItemDef(itemIndex).tier == ItemTier.Tier2)
-                                {
-                                    self.inventory.RemoveItem(itemIndex);
-                                    break;
-                                }
-                            }
-                        }
-                        else if (self.inventory.GetTotalItemCountOfTier(ItemTier.Tier3) > 0 && (CursePrefersLegendary.Value > 0) && ((x -= CursePrefersLegendary.Value) < 0))
-                        {
-                            foreach (ItemIndex itemIndex in inventoryList)
-                            {
-                                if (ItemCatalog.GetItemDef(itemIndex).tier == ItemTier.Tier3)
-                                {
-                                    self.inventory.RemoveItem(itemIndex);
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            i--;
-                        }
-                    }
-                    else
-                    {
-                        Chat.AddMessage("<style=cEvent>And then there was nothing left for you to forget.</style>");
-                        break;
-                    }
-                }
-            }
-            orig(self, stage);
         }
     }
 }

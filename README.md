@@ -13,15 +13,20 @@ Ways to cleanse curses and support for modded difficulties will be added in late
 | Icon  | Description |
 | ------------- | ------------- |
 | | <p align="center">**COMMON**</p> |
-| <img src="https://cdn.discordapp.com/attachments/980836743894941696/1016887347222151178/Forgetfulness.png?raw=true" width=128> | **Forgetfulness**<br>Each time you enter a stage, you will **lose** 2 random items <sup>(+2 per stack)</sup>. Prefers rarities: [<sup>C</sup>80%/<sup>Uc</sup>20%/<sup>L</sup>0%] |
+| <img src="https://cdn.discordapp.com/attachments/980836743894941696/1019235256659877959/Forgetfulness.png?raw=true" width=128> | **Forgetfulness**<br>Each time you enter a stage, you will **lose** 2 random items <sup>(+2 per stack)</sup>. Prefers rarities: [<sup>C</sup>80%/<sup>Uc</sup>20%/<sup>L</sup>0%] |
 | <img src="https://cdn.discordapp.com/attachments/980836743894941696/1018264171147694140/wip.png?raw=true" width=128> | **Exposed**<br>Enemies gain **10% critical strike chance** <sup>(+10% per stack)</sup>. |
 | <img src="https://cdn.discordapp.com/attachments/980836743894941696/1018264171147694140/wip.png?raw=true" width=128> | **Tortured**<br>All interactables have a **LETHAL blood cost** of **10% hp** <sup>(+5% per stack, capped at 90%)</sup>. |
 | | <p align="center">**UNCOMMON**</p> |
 | <img src="https://cdn.discordapp.com/attachments/980836743894941696/1016887347478011934/Fragility.png?raw=true" width=128> | **Fragility**<br>Fall damage is **100%** stronger <sup>(+100% per stack)</sup> and **lethal**. |
+| <img src="https://cdn.discordapp.com/attachments/980836743894941696/1019235172706697519/Irresponsibility.png?raw=true" width=128> | **Irresponsibility**<br>**Shrines of Chance** are **100%** more common <sup>(+100% per stack)</sup>, and are **10%** more likely to drop **nothing** <sup>(+10% per stack, capped at 90%)</sup>. |
+| <img src="https://cdn.discordapp.com/attachments/980836743894941696/1019235172962553896/Cursed.png?raw=true" width=128> | **Cursed**<br>For every stack, add **1** more curse(s) to your inventory every stage. |
 | | <p align="center">**RARE**</p> |
 | <img src="https://cdn.discordapp.com/attachments/980836743894941696/1017083093598883902/Impatience.png?raw=true" width=128> | **Impatience**<br>Spending more than **5** minutes on a stage will begin to **drain your max health.** By **10** minutes, your max health will be fully reduced to **25%** of its original value.</style> Stacking causes health drain to speed up by **10%.** |
 
 All of these items can be removed or configured to your liking. Special thanks to the RoR2 Modding Discord for teaching me how to do this... again.
+
+# Recommended Mods:
+* <a href="https://thunderstore.io/package/XoXFaby/BetterUI/">**BetterUI**</a> by XoXFaby, for descriptive tooltips for each curse.
 
 # To do:
 
@@ -41,4 +46,6 @@ All of these items can be removed or configured to your liking. Special thanks t
 * **Added curse "Exposed" (Common)**
 * **Added curse "Tortured" (Common)**
 * **Added curse "Fragility" (Uncommon)**
+* **Added curse "Irresponsibility" (Uncommon)**
+* **Added curse "Cursed" (Uncommon)**
 * **Added curse "Impatience" (Rare)**

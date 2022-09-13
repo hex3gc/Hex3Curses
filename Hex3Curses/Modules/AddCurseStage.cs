@@ -91,6 +91,16 @@ namespace Hex3Curses.Modules
                         case Difficulty.typhoon: cursesToAdd = 3; break;
                         default: cursesToAdd = 0; break;
                     }
+
+                    // Add additional curses for each Cursed
+                    foreach (ItemIndex itemIndex in ItemCatalog.GetItemsWithTag(ItemTag.CannotDuplicate))
+                    {
+                        if (ItemCatalog.GetItemDef(itemIndex).name == "H3C_CURSED")
+                        {
+                            cursesToAdd += behavior.master.inventory.GetItemCount(itemIndex);
+                        }
+                    }
+
                     for (int i = 0; i < cursesToAdd; i++)
                     {
                         int commonWeight = 70;
@@ -168,7 +178,31 @@ namespace Hex3Curses.Modules
 
     public class CurseBehavior : MonoBehaviour
     {
+        // AddCurseStage
         public Difficulty selectedDifficulty;
         public CharacterMaster master;
+        // Forgetfulness
+        public float forgetChatTimer;
+        public bool forgetChatTimerOn = false;
+        public string forgetMessage;
+        // Injured
+        public float injuredCooldownTimer;
+
+        void FixedUpdate()
+        {
+            // Adds a Forgetfulness message to chat after the stage begins
+            if (forgetChatTimerOn)
+            {
+                forgetChatTimer += Time.fixedDeltaTime;
+                if (forgetChatTimer > 3f)
+                {
+                    Chat.AddMessage(forgetMessage);
+                    forgetChatTimerOn = false;
+                }
+            }
+
+            // Tracks the cooldown of Injured stacks
+            injuredCooldownTimer += Time.fixedDeltaTime;
+        }
     }
 }

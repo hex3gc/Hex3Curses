@@ -72,9 +72,12 @@ namespace Hex3Curses
             Forgetfulness forgetfulness = new Forgetfulness(); forgetfulness.Init(Config);
             Exposed exposed = new Exposed(); exposed.Init(Config);
             Tortured tortured = new Tortured(); tortured.Init(Config);
+            Injured injured = new Injured(); injured.Init(Config);
 
             ModLogger.LogInfo("Initializing Uncommon Curses");
             Fragility fragility = new Fragility(); fragility.Init(Config);
+            Irresponsibility irresponsibility = new Irresponsibility(); irresponsibility.Init(Config);
+            Cursed cursed = new Cursed(); cursed.Init(Config);
 
             ModLogger.LogInfo("Initializing Rare Curses");
             Impatience impatience = new Impatience(); impatience.Init(Config);
